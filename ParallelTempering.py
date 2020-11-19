@@ -77,7 +77,8 @@ def find_min(hamiltonian_in, temperatures, num_MC_steps, num_swaps):
     min_energy = 0
     min_energy_state = None
     num_actual_swaps = 0
-
+    
+    #run experiment with a designated number of swaps
     for i in range(num_swaps):
     
         min_energy, min_energy_state = lowest_energy(ensemble)
@@ -89,7 +90,7 @@ def find_min(hamiltonian_in, temperatures, num_MC_steps, num_swaps):
             threads[replica].start()
         
         while signal["Threads Finished"] != len(ensemble): #wait for threads to finish
-            time.sleep(1) 
+            time.sleep(.1) 
     
         min_energy, min_energy_state = lowest_energy(ensemble)
     
@@ -110,4 +111,43 @@ def find_min(hamiltonian_in, temperatures, num_MC_steps, num_swaps):
                 num_actual_swaps += 1
 
     return (min_energy_state, min_energy, num_actual_swaps, time.time()-start_time)
+
+
+def timed_find_min(hamiltonian_in, temperatures, total_time):
+    start_time = time.time()
+    ensemble = [Replica(hamiltonian_in, temp) for temp in temperatures]
+    min_energy = 0
+    min_energy_state = None
+    num_swaps = 0
+    
+    #runs experiment for specified length of time
+    while (time.time()-start_time) < total_time:
+        num_swaps += 1
+        threads = {}
+        signal = {"Threads Finished":0}
+    
+        for replica in ensemble: #run each replica for N steps in its own thread
+            threads[replica] = threading.Thread(target = MC_simul, args = (replica, hamiltonian_in.shape[0], signal))
+            threads[replica].start()
+        
+        while signal["Threads Finished"] != len(ensemble): #wait for threads to finish
+            time.sleep(.1) 
+    
+        min_energy, min_energy_state = lowest_energy(ensemble)
+    
+        swap = np.random.randint(len(ensemble)-1) #propose to swap
+        delta_E = (1/temperatures[swap] - 1/temperatures[swap+1])*(ensemble[swap+1].energy - ensemble[swap].energy)
+    
+        if delta_E < 0:
+            temp_state = ensemble[swap].state.copy()
+            ensemble[swap].state = ensemble[swap+1].state.copy()
+            ensemble[swap+1].state = temp_state
+        else:
+            r = np.random.uniform(0, 1)
+            if r < np.exp(-delta_E): #rejection sampling
+                temp_state = ensemble[swap].state.copy()
+                ensemble[swap].state = ensemble[swap+1].state.copy()
+                ensemble[swap+1].state = temp_state
+        
+    return (min_energy_state, min_energy, num_swaps, time.time()-start_time)
 
