@@ -119,6 +119,7 @@ def timed_find_min(hamiltonian_in, temperatures, total_time):
     min_energy = 0
     min_energy_state = None
     num_swaps = 0
+    num_actual_swaps = 0
     
     #runs experiment for specified length of time
     while (time.time()-start_time) < total_time:
@@ -139,15 +140,17 @@ def timed_find_min(hamiltonian_in, temperatures, total_time):
         delta_E = (1/temperatures[swap] - 1/temperatures[swap+1])*(ensemble[swap+1].energy - ensemble[swap].energy)
     
         if delta_E < 0:
+            num_actual_swaps += 1
             temp_state = ensemble[swap].state.copy()
             ensemble[swap].state = ensemble[swap+1].state.copy()
             ensemble[swap+1].state = temp_state
         else:
             r = np.random.uniform(0, 1)
             if r < np.exp(-delta_E): #rejection sampling
+                num_actual_swaps += 1
                 temp_state = ensemble[swap].state.copy()
                 ensemble[swap].state = ensemble[swap+1].state.copy()
                 ensemble[swap+1].state = temp_state
         
-    return (min_energy_state, min_energy, num_swaps, time.time()-start_time)
+    return (min_energy_state, min_energy, num_swaps, num_actual_swaps, time.time()-start_time)
 
