@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+
+\bibitem{1982JPhA...15.3241B}
+F.~{Barahona}, ``{On the computational complexity of Ising spin glass
+  models},'' {\em Journal of Physics A Mathematical General}, vol.~15,
+  pp.~3241--3253, Oct. 1982.
+
+\bibitem{B509983H}
+D.~J. Earl and M.~W. Deem, ``Parallel tempering: Theory{,} applications{,} and
+  new perspectives,'' {\em Phys. Chem. Chem. Phys.}, vol.~7, pp.~3910--3916,
+  2005.
+
+\bibitem{dattani2019pegasus}
+N.~Dattani, S.~Szalay, and N.~Chancellor, ``Pegasus: The second connectivity
+  graph for large-scale quantum annealing hardware,'' 2019.
+
+\bibitem{cai2014practical}
+J.~Cai, W.~G. Macready, and A.~Roy, ``A practical heuristic for finding graph
+  minors,'' 2014.
+
+\end{thebibliography}
