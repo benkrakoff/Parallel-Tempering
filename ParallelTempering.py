@@ -38,11 +38,12 @@ class Replica:
         new_state = self.state.copy()
         new_state[flip] = -new_state[flip]
         
-        delta_E = np.matmul(new_state, np.matmul(self.hamiltonian, new_state)) - self.energy
+        new_E = np.matmul(new_state, np.matmul(self.hamiltonian, new_state))
+        delta_E = new_E - self.energy
         
         if delta_E < 0:
             self.state = new_state
-            self.energy += delta_E
+            self.energy = new_E
         else:
             r = np.random.uniform(0, 1)
             if r < np.exp(-delta_E/self.temp): #rejection sampling
