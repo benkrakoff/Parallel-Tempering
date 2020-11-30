@@ -4,6 +4,7 @@
 \usepackage{amsmath,amsfonts,amssymb, graphicx, subfigure}
 \usepackage{beamerthemeshadow}
 \setbeamercovered{transparent}
+\setbeamertemplate{bibliography item}{\insertbiblabel}
 \title{\scshape{The EA Ising Model via Parallel Tempering and D-Wave}}
 \author{\scshape{Benjamin Krakoff}}
 
@@ -30,19 +31,19 @@ Finding the global minimum is  an NP-complete optimization problem \cite{1982JPh
 	\end{frame}
 
 \begin{frame}{Parallel Tempering: Implementation}
-	Following \cite{B509983H}
+	Following basic implementation suggested in \cite{B509983H}
 	\begin{itemize}
-	\item Start with replicas $x^{(1)}, \ldots, x^{(n)}$ at temperatures $T_1 < \ldots  < T_n$. 
-	\item In parallel, run MCMC for each for $n$ steps. 
-	\item Choose $i$ at random, swap replicas $x^{(i)}, x^{(i+1)}$ with probability  $\min\{1, e^{(1/T_{i+1}-1/{T_i})(H(x^{(i+1)}) - H(x^{(i)}))}\}$ to satisfy detailed balance for the join probability distribution
+	\item Start with replicas $x^{(1)}, \ldots, x^{(n)}$ at close, evenly spaced temperatures $T_1 < \ldots  < T_n$. 
+	\item In parallel, run MCMC with single spin updates for each for $n$ steps. 
+	\item Choose $i$ at random, swap replicas $x^{(i)}, x^{(i+1)}$ with probability  $\min\{1, e^{(1/T_{i+1}-1/{T_i})(H(x^{(i+1)}) - H(x^{(i)}))}\}$ to satisfy detailed balance for the joint probability distribution
 	\begin{align*}
 		P(x^{(1)}, T_1, \ldots, x^{(n)}, T_n) = \prod_{1\leq i \leq n} P(x^{(i)}, T_i) \propto e^{-\sum_i H(x^{(i)})/T_i}
 		\end{align*}
 	\end{itemize}
 	\end{frame}
 
-\begin{frame}{D-Wave Annealer}
-	Consists of a specific sparse graph, Pegasus graph \cite{dattani2019pegasus}. Vertices are sites that can spin up or down, edge couplings can be specified by the user. \\
+\begin{frame}{D-Wave Cloud Quantumn Annealer}
+	Consists of a specific sparse graph, Pegasus graph \cite{dattani2019pegasus}. Vertices are sites that can spin up or down, edge weights can be specified by the user. \\
 	\begin{center}
 	\includegraphics[scale=.3]{Plot.png}
 	\end{center}
@@ -54,7 +55,16 @@ Finding the global minimum is  an NP-complete optimization problem \cite{1982JPh
 	\end{frame}
 
 \begin{frame}{Minor Embedding: D-Wave}
-	Minor embedding $G_1$ into $G_2$ is NP-hard, but when $G$ is sparse, smaller than Pegasus there are fast heuristic algorithms \cite{cai2014practical}. When $G$ is not sparse, use a pre-computed minor embedding of complete graph, forget unneeded edges.
+ A \emph{minor embedding} of $G_1$ in $G_2$ is a map $\phi: V(G_1) \rightarrow 2^{V(G_2)}$ so that 
+	\begin{itemize}
+		\item For each $v \in V(G_1)$, $\phi(v)$ is connected.
+		\item For $v, w \in V(G_1)$, $\phi(v)$ and $\phi(w)$ are disjoint.
+		\item If $(v, w)$ is an edge in $G_1$, there is at least one edge between $\phi(v)$ and $\phi(w)$.
+	\end{itemize}
+
+\vspace{10mm}
+	Minor embedding $G_1$ into $G_2$ is NP-hard, but when $G$ is sparse, smaller than Pegasus there are fast heuristic algorithms \cite{cai2014practical}.\\
+	When $G$ is not sparse, use a pre-computed minor embedding of complete graph, forget unneeded edges.
 \end{frame}
 
 \begin{frame}{Experimental Setup}
@@ -68,7 +78,7 @@ Ensembles considered
  \item $J_{ij} \sim \pm 1$ uniformly
  \item  $J_{ij} \sim \mathcal{N}(0, 1)$.
  \end{itemize} 
-Generated 5 hamiltonians for each graph and distribution of $J_{i, j}$ let parallel tempering and D-Wave attempt to solve for the same amount of time.
+Generated 5 hamiltonians for each graph and distribution of $J_{i j}$ let parallel tempering and D-Wave attempt to solve for the same amount of time.
 	\end{frame}
 
 \begin{frame}{Results}
@@ -95,7 +105,7 @@ Generated 5 hamiltonians for each graph and distribution of $J_{i, j}$ let paral
 
 \begin{frame}
 	\bibliography{ParallelTempvsDwave.bib} 
-	\bibliographystyle{ieeetr}
+	\bibliographystyle{ieetr}
 \end{frame}
 
 \end{document}
