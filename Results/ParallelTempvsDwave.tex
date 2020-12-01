@@ -99,10 +99,10 @@
 	To minimize a hamiltonian on an arbitrary graph, D-Wave systems first finds a minor embedding $\phi$ into the Pegasus graph, ensures vertices within $\phi(v)$ are very strongly coupled, and then assigns edges between $\phi(u)$ and $\phi(v)$ weight $J_{u, v}$. The general problem of finding a minor embedding of $G_1$ in $G_2$ is NP-hard, but when $G$ is sparse and has many fewer vertices than the Pegasus graph D-Wave supplies heuristic algorithms that work well in practice \cite{cai2014practical}. When $G$ is not sparse, D-Wave has computed minor embeddings of complete graphs which can be used to minor-embed $G$ by just forgetting unneeded edges.
 	
 	\section{Comparison}
-	\indent \indent Performance is compared across several families of graphs and ensembles. We consider subgraphs of the Pegasus graph of size 40 and 448 along with complete graphs of size 40 and 119. For each graph we generate 10 hamiltonians, 5 by choosing $J_{i, j} = \pm 1$ uniformly at random and 5 by choosing $J_{i, j} \sim \mathcal{N}(0, 1)$ and then let D-Wave and parallel tempering attempt to find the global minimum for each for approximately the same amount of time. Both solvers had identical performance on small graphs, but on larger graphs parallel tempering performed better on hamiltonians with $J_{i, j} \sim \pm 1$ while D-Wave performed better on hamiltonians with gaussian entries. For the solutions that differ, we also compute the discrepancy, defined as
+	\indent \indent Performance is compared across several families of graphs and ensembles. We consider subgraphs of the Pegasus graph of size 40 and 448 along with complete graphs of size 40 and 119. For each graph we generate 10 hamiltonians, 5 by choosing $J_{i, j} = \pm 1$ uniformly at random and 5 by choosing $J_{i, j} \sim \mathcal{N}(0, 1)$ and then let D-Wave and parallel tempering attempt to find the global minimum for each for approximately the same amount of time. Both solvers had identical performance on small graphs, but on larger graphs parallel tempering performed better for all graphs and ensembles of $J_{ij}$. For large graphs we also compute the discrepancy, defined as
 	$$\min \{(x_D + x_P)/2, (x_D - x_P)/2\} / n$$
 	where $x_D$ and $x_P$  are the solutions produced by D-Wave and parallel tempering, respectively and $n$ is the number of vertices. The discrepancy computes at how many nodes the solutions $x_D$ and $x_P$ differ taking into account the symmetry $H(x) = H(-x)$. The graphs below plot the average value of the solutions produced by each method, along with error bars 1 standard deviation above and below mean.
-	
+
 	\begin{figure}[!htbp]
 		\centering
 		\subfigure{\includegraphics[width=8cm]{pegasus_40.png}} 
@@ -110,6 +110,7 @@
 		\subfigure{\includegraphics[width=8cm]{clique_40.png}} 
 		\subfigure{\includegraphics[width=8cm]{clique_119.png}} \\
 	\end{figure}
+
 
 \begin{center}
 \begin{tabular}{c|c|c|c|c}
