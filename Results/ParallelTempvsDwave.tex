@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
  
 \usepackage[margin=1in]{geometry} 
-\usepackage{enumerate, amsmath,amsthm,amssymb, graphicx, multicol, array, tikz-cd, mathrsfs, comment, dsfont, esint, mathtools, subfigure}
+\usepackage{enumerate, amsmath,amsthm,amssymb, graphicx, multicol, array, tikz-cd, mathrsfs, comment, dsfont, esint, mathtools, subfigure, url}
  
  \newcommand{\Hs}{\mathbb{H}}
 \newcommand{\N}{\mathbb{N}}
@@ -75,11 +75,11 @@
 	
 	\subsection{Parallel Tempering}
 	\indent \indent Parallel tempering is a technique to leverage the benefits of MCMC methods at low and high temperatures. We follow the basic implementation suggested in \cite{B509983H}. \\
-	\indent Let's begin with the main idea of parallel tempering. Suppose we run two replicas $x^{(1)}$ and $x^{(2)}$ in parallel at temperatures $T_1 < T_2$ using the MCMC scheme outlined in 2.1. As the replicas explore phase space, $x^{(1)}$ is likely to have lower energy than $x^{(2)}$ but $x^{(2)}$ is able to more easily escape local minima. So we let $x^{(1)}$ peek at $x^{(2)}$'s solution, and if $x^{(2)}$ happens to have found a lower energy solution, $x^{(1)}$ can choose to swap states with $x^{(2)}$. Care must be taken to choose $T_1$ and $T_2$ so that the energy histograms of $x^{(1)}$ and $x^{(2)}$ overlap, and thus swaps have a non-negligible chance of occuring. \\
+	\indent Let's begin with the main idea of parallel tempering. Suppose we run two replicas $x^{(1)}$ and $x^{(2)}$ in parallel at temperatures $T_1 < T_2$ using the MCMC scheme outlined in 2.1. As the replicas explore phase space, $x^{(1)}$ is likely to have lower energy than $x^{(2)}$, but $x^{(2)}$ is able to more easily escape local minima. So as we let $x^{(1)}$ and $x^{(2)}$ walk around phase space, we let $x^{(1)}$ peek at the state of $x^{(2)}$, and if $x^{(2)}$ happens to have found a lower energy solution, $x^{(1)}$ can choose to swap states with $x^{(2)}$. Care must be taken to choose $T_1$ and $T_2$ sufficiently close so that the energy histograms of $x^{(1)}$ and $x^{(2)}$ overlap, and swaps have a non-negligible chance of occurring. \\
 	\indent Here is how we implemented parallel tempering. Run replicas $x^{(1)}, x^{(2)}, \ldots, x^{(n)}$ at temperatures $T_1 < T_2 < \ldots < T_{n-1} < T_n$, where the $T_i$'s are evenly spaced and sufficiently close together so that the energy histograms of $x^{(i)}$ and $x^{(i+1)}$ overlap. Run each replica for $m$ steps, where $m$ is the size of the system. Pick an $i$ at random, and swap the state of  $x^{(i)}$ with the state of $x^{(i+1)}$ with probability $\min\{1, e^{(1/T_{i+1}-1/{T_i})(H(x^{(i+1)}) - H(x^{(i)}))}\}$. The swap probability is chosen to satisfy detailed balance for the joint probability distribution 
 	$$P(x^{(1)}, T_1, \ldots, x^{(n)}, T_n) = \prod_{1\leq i \leq n} P(x^{(i)}, T_i) \propto e^{-\sum_i H(x^{(i)})/T_i}$$
 	\section{D-Wave Systems}
-	\indent \indent The D-Wave quantumn annealer is another tool for finding approximate minima of $H$. The D-Wave annealer consists of a large Pegasus graph, where the vertices are qubits with spins $\pm 1$ and the edges are couplers, whose weights, or coupling strengths, corresponding to the $J_{i,  j}$ can be set to almost any value. The precise structure of the Pegasus graph and more details can be found in \cite{dattani2019pegasus}, but the most relevant fact for our purposes is that D-Wave systems minimizes  hamiltonians associated to subgraphs of this particular sparse graph. To solve problems for an arbitrary graph $G$, one needs a minor embedding of $G$ into the Pegasus graph.
+	\indent \indent The D-Wave quantum annealer is another tool for finding approximate minima of $H$. The D-Wave annealer consists of a large Pegasus graph, where the vertices are qubits with spins $\pm 1$ and the edges are couplers, whose weights, or coupling strengths, corresponding to the $J_{i, j}$ can be set to any value. The precise structure of the Pegasus graph and more details can be found in \cite{dattani2019pegasus}, but the relevant fact for our purposes is that D-Wave systems minimizes  hamiltonians associated to subgraphs of this particular sparse graph. To solve problems for an arbitrary graph $G$, one needs a minor embedding of $G$ into the Pegasus graph.
 	
 	\subsection{Minor Embedding}
 	\indent \indent Let's start with an illustrative example. Suppose we have a device that can minimize any hamiltonian on a loop with 4 vertices, and we want to minimize a hamiltonian on a loop with 3 vertices. We can write our hamiltonian explicitly as
@@ -101,7 +101,7 @@
 	\section{Comparison}
 	\indent \indent Performance is compared across several families of graphs and ensembles. We consider subgraphs of the Pegasus graph of size 40 and 448 along with complete graphs of size 40 and 119. For each graph we generate 10 hamiltonians, 5 by choosing $J_{i, j} = \pm 1$ uniformly at random and 5 by choosing $J_{i, j} \sim \mathcal{N}(0, 1)$ and then let D-Wave and parallel tempering attempt to find the global minimum for each for approximately the same amount of time. Both solvers had identical performance on small graphs, but on larger graphs parallel tempering performed better for all graphs and ensembles of $J_{ij}$. For large graphs we also compute the discrepancy, defined as
 	$$\min \{(x_D + x_P)/2, (x_D - x_P)/2\} / n$$
-	where $x_D$ and $x_P$  are the solutions produced by D-Wave and parallel tempering, respectively and $n$ is the number of vertices. The discrepancy computes at how many nodes the solutions $x_D$ and $x_P$ differ taking into account the symmetry $H(x) = H(-x)$. The graphs below plot the average value of the solutions produced by each method, along with error bars 1 standard deviation above and below mean.
+	where $x_D$ and $x_P$  are the solutions produced by D-Wave and parallel tempering, respectively and $n$ is the number of vertices. The discrepancy computes at how many nodes the solutions $x_D$ and $x_P$ differ taking into account the symmetry $H(x) = H(-x)$. The source code for parallel tempering and data can be found at \url{https://github.com/benkrakoff/Parallel-Tempering}. The source code for interacting with D-Wave can be found at \url{https://github.com/benkrakoff/DWave_Tester}.
 
 	\begin{figure}[!htbp]
 		\centering
